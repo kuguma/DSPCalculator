@@ -24,7 +24,7 @@ recipes = {
         "components" : {
             "Carbon nanotube" : 4,
             "Titanium alloy" : 1,
-            "High-purity sillicon" : 1
+            "High-purity silicon" : 1
         }
     },
     "Carbon nanotube" : {
@@ -64,14 +64,14 @@ recipes = {
         }
     },
     "Refined oil" : {
-        "fac" : "chem",
+        "fac" : "ref",
         "sec" : 4/2,
         "components" : {
             "Crude oil" : 2/2,
         }
     },
     "Crude oil" : {
-        "fac" : "ref",
+        "fac" : "ext",
         "end" : "seep"
     },
     "Titanium ingot" : {
@@ -102,8 +102,11 @@ recipes = {
         }
     },
     "Iron ingot" : {
-        "fac" : "mine",
-        "end" : "vein"
+        "fac" : "smelt",
+        "sec" : 1,
+        "components" : {
+            "Iron ore" : 1
+        }
     },
     "Solar sail" : {
         "fac" : "asm",
@@ -170,7 +173,7 @@ recipes = {
         "fac" : "asm",
         "sec" : 2,
         "components" : {
-            "High-purity sillicon" : 2,
+            "High-purity silicon" : 2,
             "Copper ingot" : 1,
         }
     },
@@ -359,15 +362,15 @@ recipes = {
         "sec" : 8,
         "components" : {
             "Carbon nanotube" : 2,
-            "Crystal sillicon" : 2,
+            "Crystal silicon" : 2,
             "Plastic" : 1
         }
     },
-    "Crystal sillicon" : {
+    "Crystal silicon" : {
         "fac" : "smelt",
         "sec" : 2,
         "components" : {
-            "High-purity sillicon" : 1,
+            "High-purity silicon" : 1,
         }
     },
     "Structure matrix" : {
@@ -398,22 +401,134 @@ recipes = {
         "fac" : "pump",
         "end" : "pump"
     },
-    "High-purity sillicon" : {
+    "High-purity silicon" : {
         "fac" : "smelt",
         "sec" : 2,
         "components" : {
-            "Sillicon ore" : 2,
+            "Silicon ore" : 2,
         }
     },
-    "Sillicon ore" : {
+    "Silicon ore" : {
         "fac" : "mine",
         "end" : "vein"
     },
+    "Accumulator" : {
+        "fac" : "asm",
+        "sec" : 5,
+        "components" : {
+            "Iron ingot" : 6,
+            "Super-magnetic ring" : 6,
+            "Crystal silicon" : 4
+        }
+    },
+    "Planetary Logistics Station" : {
+        "fac" : "asm",
+        "sec" : 20,
+        "components" : {
+            "Steel" : 40,
+            "Titanium ingot" : 40,
+            "Processor" : 40,
+            "Particle container" : 20
+        }
+    },
+    "Intersteller Logistics Station" : {
+        "fac" : "asm",
+        "sec" : 30,
+        "components" : {
+            "Planetary Logistics Station" : 1,
+            "Titanium alloy" : 40,
+            "Particle container" : 20
+        }
+    },
+    "Orbit collector" : {
+        "fac" : "asm",
+        "sec" : 30,
+        "components" : {
+            "Intersteller Logistics Station" : 1,
+            "Super-magnetic ring" : 50,
+            "Reinforced thruster" : 20,
+            "Accumulator" : 20
+        }
+    },
+    "Reinforced thruster" : {
+        "fac" : "asm",
+        "sec" : 6,
+        "components" : {
+            "Titanium alloy" : 5,
+            "Super-magnetic ring" : 5,
+        }
+    },
+    "Annihilation constraint sphere" : {
+        "fac" : "asm",
+        "sec" : 20,
+        "components" : {
+            "Particle container" : 1,
+            "Processor" : 1,
+        }
+    },
+    "Antimatter fuel rod" : {
+        "fac" : "asm",
+        "sec" : 12,
+        "components" : {
+            "Antimatter" : 10,
+            "Hydrogen" : 10,
+            "Annihilation constraint sphere" : 1,
+            "Titanium alloy" : 1
+        }
+    }
 
 }
 
+
+facilities = {
+    "asm" : {
+        "work" : 480,
+        "idle" : 15
+    },
+    "smelt" : {
+        "work" : 360,
+        "idle" : 12
+    },
+    "ref" : {
+        "work" : 960,
+        "idle" : 24
+    },
+    "chem" : {
+        "work" : 720,
+        "idle" : 24
+    },
+    "part" : {
+        "work" : 12000,
+        "idle" : 120
+    },
+    "ext" : {
+        "work" : 840,
+        "idle" : 24,
+        "speed" : 2.0 # 2.0/s
+    },
+    "pump" : {
+        "work" : 300,
+        "idle" : 12,
+        "speed" : 1 # 1.0/s
+    },
+    "mine" : {
+        "work" : 420,
+        "idle" : 24,
+        "speed" : 0.5* 5 # 5 vein
+    },
+    "res" : {
+        "work" : 480,
+        "idle" : 12
+    },
+    "orbit" : {
+        "work" : 0,
+        "idle" : 0,
+        "speed" : 0.87 * 12 - (30/8)
+    }
+}
+
 # 
-ignore_list = ["Processor"]
+ignore_list = ["Processor", "Sulfuric acid"]
 
 def search_recipe(name, pcs, result):
     if name in recipes:
@@ -429,24 +544,52 @@ def search_recipe(name, pcs, result):
             return
     print(f"!!! no data : {name}")
 
+def depend(parent_name, child_name):
+    result = dict()
+    search_recipe(parent_name, 1, result)
+    return (child_name in result)
+
 from collections import OrderedDict
 
 def main():
-    print("< Dyson Sphere Program - calculator >\n")
-    # req = "Gravity_matrix"
+    print("[ Dyson Sphere Program - calculator ]\n")
     req = input("Enter the name of component > ")
     result = dict()
     search_recipe(req, 1, result)
     result = OrderedDict(sorted(result.items(), key=lambda x:x[1]))
-    print(f"| {'[ Name ]':^28} | {'pcs':>6} | {'fac':^5} | N ")
+
+    gen_speed = 1/6
+    print(f"(Target Production speed = {gen_speed:1.2f} pcs/s)")
+
+    print(f"| {'[ Name ]':^28} | {'pcs':>6} | {'fac':^5} | {'N':^5} ||Fe |Cu |Ti |Si |st |co |oi | H |")
+    consumption = 0
     for name, pcs in result.items():
         e = recipes[name]
         fac = e["fac"]
         if "sec" in e:
-            n = pcs * e["sec"]
+            n = pcs * e["sec"] * gen_speed
+            consumption += e["sec"] * facilities[fac]["work"] * pcs
         else:
-            n = '-'
-        print(f"| {name:^28} | {pcs:>6.2f} | {fac:^5} | {n}")
+            n = pcs * 1 / facilities[fac]["speed"] * gen_speed
+        
+        def depend_str(child_name):
+            return "x" if depend(name, child_name) else " "
+
+        dep = ""
+        dep += depend_str("Iron ore") + " | "
+        dep += depend_str("Copper ore") + " | "
+        dep += depend_str("Titanium ore") + " | "
+        dep += depend_str("Silicon ore") + " | "
+        dep += depend_str("Stone ore") + " | "
+        dep += depend_str("Coal ore") + " | "
+        dep += depend_str("Crude oil") + " | "
+        dep += depend_str("Hydrogen") + " |"
+        
+        print(f"| {name:^28} | {pcs:>6.2f} | {fac:^5} | {n:>5.2f} || {dep}")
+    
+    print(f"[ consumption ] {consumption} kJ / pcs = {consumption/1000*gen_speed} MW / s")
+
+
 
 
 
