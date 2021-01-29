@@ -569,41 +569,50 @@ use_advanced_recipe("Carbon nanotube")
 use_advanced_recipe("Graphene")
 use_advanced_recipe("Sulfuric acid")
 use_advanced_recipe("Organic crystal")
+
+def search_recipe(name, pcs, result, parent):
     if name in recipes:
         entry = recipes[name]
         if name not in result:
-            result[name] = 0
-        result[name] += pcs
+            result[name] = dict()
+            result[name]["pcs"] = 0
+            result[name]["dest"] = set()
+        result[name]["pcs"] += pcs
+        result[name]["dest"].add(parent)
         if "end" in entry or name in ignore_list:
             return
         else:
             for k, i in entry["components"].items():
-                search_recipe(k, pcs*i, result)
+                search_recipe(k, pcs*i, result, name)
             return
     print(f"!!! no data : {name}")
 
 def depend(parent_name, child_name):
     result = dict()
-    search_recipe(parent_name, 1, result)
+    search_recipe(parent_name, 1, result, "")
     return (child_name in result)
 
 from collections import OrderedDict
 
 def main():
     print("[ Dyson Sphere Program - calculator ]\n")
-    req = input("Enter the name of component > ")
+    req = input("Enter the name of component > ").split(",")
+    req_name = req[0]
+    req_pcs = 1 if len(req) != 2 else float(req[1])
+    print(req)
     result = dict()
-    search_recipe(req, 1, result)
-    result = OrderedDict(sorted(result.items(), key=lambda x:x[1]))
+    search_recipe(req_name, req_pcs, result, "")
+    result = OrderedDict(sorted(result.items(), key=lambda x:x[1]["pcs"]))
 
     gen_speed = 1/6
     print(f"(Target Production speed = {gen_speed:1.2f} pcs/s)")
 
-    print(f"| {'[ Name ]':^28} | {'pcs':>6} | {'fac':^5} | {'N':^5} ||Fe |Cu |Ti |Si |st |co |oi | H |")
+    print(f"| {'[ Name ]':^28} | {'pcs':>6} | {'fac':^5} | {'N':^5} ||Fe |Cu |Ti |Si |st |co |oi | H || ->")
     consumption = 0
-    for name, pcs in result.items():
+    for name, d in result.items():
         e = recipes[name]
         fac = e["fac"]
+        pcs = d["pcs"]
         if "sec" in e:
             n = pcs * e["sec"] * gen_speed
             consumption += e["sec"] * facilities[fac]["work"] * pcs
@@ -621,11 +630,12 @@ def main():
         dep += depend_str("Stone ore") + " | "
         dep += depend_str("Coal ore") + " | "
         dep += depend_str("Crude oil") + " | "
-        dep += depend_str("Hydrogen") + " |"
+        dep += depend_str("Hydrogen")
         
-        print(f"| {name:^28} | {pcs:>6.2f} | {fac:^5} | {n:>5.2f} || {dep}")
+        dest = d["dest"]
+        print(f"| {name:^28} | {pcs:>6.2f} | {fac:^5} | {n:>5.2f} || {dep} || {dest}")
     
-    print(f"[ consumption ] {consumption} kJ / pcs = {consumption/1000*gen_speed} MW / s")
+    print(f"[ consumption ] {consumption/1000} MJ / pcs = {consumption/1000*gen_speed} MW / s")
 
 
 
