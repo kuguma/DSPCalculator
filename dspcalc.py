@@ -98,7 +98,7 @@ recipes = {
         "fac" : "smelt",
         "sec" : 3,
         "components" : {
-            "Iron ingot" : 3/3,
+            "Iron ingot" : 3,
         }
     },
     "Iron ingot" : {
@@ -301,11 +301,11 @@ recipes = {
     },
     "Titanium glass" : {
         "fac" : "asm",
-        "sec" : 5,
+        "sec" : 5/2,
         "components" : {
-            "Glass" : 2,
-            "Titanium ingot" : 2,
-            "Water" : 2
+            "Glass" : 2/2,
+            "Titanium ingot" : 2/2,
+            "Water" : 2/2
         }
     },
     "Graviton lens" : {
