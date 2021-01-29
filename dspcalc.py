@@ -475,8 +475,40 @@ recipes = {
             "Annihilation constraint sphere" : 1,
             "Titanium alloy" : 1
         }
+    },
+    "Spiniform stalagmite crystal" : {
+        "fac" : "mine",
+        "end" : "vein"
+    },
+    "Fire ice" : {
+        "fac" : "mine",
+        "end" : "vein"
     }
+}
 
+advanced_recipes = {
+    "Graphene" : {
+        "fac" : "chem",
+        "sec" : 2/2,
+        "components" : {
+            "Fire ice" : 2/2,
+        }
+    },
+    "Carbon nanotube" : {
+        "fac" : "chem",
+        "sec" : 4/2,
+        "components" : {
+            "Spiniform stalagmite crystal" : 2/2,
+        }
+    },
+    "Sulfuric acid" : {
+        "fac" : "pump",
+        "end" : "pump"
+    },
+    "Organic crystal" : {
+        "fac" : "mine",
+        "end" : "vein"
+    }
 }
 
 
@@ -530,7 +562,13 @@ facilities = {
 # 
 ignore_list = ["Processor", "Sulfuric acid"]
 
-def search_recipe(name, pcs, result):
+def use_advanced_recipe(name):
+    recipes[name] = advanced_recipes[name]
+
+use_advanced_recipe("Carbon nanotube")
+use_advanced_recipe("Graphene")
+use_advanced_recipe("Sulfuric acid")
+use_advanced_recipe("Organic crystal")
     if name in recipes:
         entry = recipes[name]
         if name not in result:
