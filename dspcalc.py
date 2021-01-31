@@ -5,7 +5,7 @@ recipes = {
         "sec" : 6,
         "components" : {
             "Dyson sphere component" : 2,
-            "Deutron fuel rod" : 2,
+            "Deuteron fuel rod" : 2,
             "Quantum chip" : 2
         }
     },
@@ -177,7 +177,7 @@ recipes = {
             "Copper ingot" : 1,
         }
     },
-    "Deutron fuel rod" : {
+    "Deuteron fuel rod" : {
         "fac" : "asm",
         "sec" : 6,
         "components" : {
@@ -508,6 +508,10 @@ advanced_recipes = {
     "Organic crystal" : {
         "fac" : "mine",
         "end" : "vein"
+    },
+    "Deuterium" : {
+        "fac" : "orbit",
+        "end" : "gas"
     }
 }
 
@@ -569,6 +573,7 @@ use_advanced_recipe("Carbon nanotube")
 use_advanced_recipe("Graphene")
 use_advanced_recipe("Sulfuric acid")
 use_advanced_recipe("Organic crystal")
+# use_advanced_recipe("Deuterium")
 
 def search_recipe(name, pcs, result, parent):
     if name in recipes:
