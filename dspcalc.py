@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from consts import (
     recipes,
     advanced_recipes,
@@ -6,15 +8,16 @@ from consts import (
 )
 
 
-def use_advanced_recipe(name):
-    recipes[name] = advanced_recipes[name]
-
-
-use_advanced_recipe("Carbon nanotube")
-use_advanced_recipe("Graphene")
-use_advanced_recipe("Sulfuric acid")
-use_advanced_recipe("Organic crystal")
-# use_advanced_recipe("Deuterium")
+def setup_advanced_recipe():
+    advanced_materials = [
+        "Carbon nanotube",
+        "Graphene",
+        "Sulfuric acid",
+        "Organic crystal",
+        # "Deuterium"
+    ]
+    for material in advanced_materials:
+        recipes[material] = advanced_recipes[material]
 
 
 def search_recipe(name, pcs, result, parent):
@@ -35,16 +38,42 @@ def search_recipe(name, pcs, result, parent):
     print(f"!!! no data : {name}")
 
 
-def depend(parent_name, child_name):
+def is_depend_on(parent_name, child_name):
     result = dict()
     search_recipe(parent_name, 1, result, "")
-    return (child_name in result)
+    return child_name in result
 
-from collections import OrderedDict
+
+def get_component_name():
+    req = input("Enter the name of component > ")
+    return req
+
+
+def add_depend_row(name):
+    dep = ""
+    children = [
+        "Iron ore",
+        "Copper ore",
+        "Titanium ore",
+        "Silicon ore",
+        "Stone ore",
+        "Coal ore",
+        "Crude oil",
+        "Hydrogen",
+    ]
+    for child in children:
+        if is_depend_on(name, child):
+            dep += "x | "
+        else:
+            dep += "  | "
+    return dep
+
 
 def main():
+    setup_advanced_recipe()
     print("[ Dyson Sphere Program - calculator ]\n")
-    req = input("Enter the name of component > ").split(",")
+    req = get_component_name()
+    req = req.split(",")
     req_name = req[0]
     req_pcs = 1 if len(req) != 2 else float(req[1])
     print(req)
@@ -66,20 +95,7 @@ def main():
             consumption += e["sec"] * facilities[fac]["work"] * pcs
         else:
             n = pcs * 1 / facilities[fac]["speed"] * gen_speed
-        
-        def depend_str(child_name):
-            return "x" if depend(name, child_name) else " "
-
-        dep = ""
-        dep += depend_str("Iron ore") + " | "
-        dep += depend_str("Copper ore") + " | "
-        dep += depend_str("Titanium ore") + " | "
-        dep += depend_str("Silicon ore") + " | "
-        dep += depend_str("Stone ore") + " | "
-        dep += depend_str("Coal ore") + " | "
-        dep += depend_str("Crude oil") + " | "
-        dep += depend_str("Hydrogen")
-        
+        dep = add_depend_row(name)
         dest = d["dest"]
         print(f"| {name:^28} | {pcs:>6.2f} | {fac:^5} | {n:>5.2f} || {dep} || {dest}")
     
@@ -88,4 +104,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
