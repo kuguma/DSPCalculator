@@ -33,7 +33,7 @@ def search_recipe(name, pcs, result, parent):
             return
         else:
             for k, i in entry["components"].items():
-                search_recipe(k, pcs*i, result, name)
+                search_recipe(k, pcs * i, result, name)
             return
     print(f"!!! no data : {name}")
 
@@ -79,9 +79,9 @@ def main():
     print(req)
     result = dict()
     search_recipe(req_name, req_pcs, result, "")
-    result = OrderedDict(sorted(result.items(), key=lambda x:x[1]["pcs"]))
+    result = OrderedDict(sorted(result.items(), key=lambda x: x[1]["pcs"]))
 
-    gen_speed = 1/6
+    gen_speed = 1 / 6
     print(f"(Target Production speed = {gen_speed:1.2f} pcs/s)")
 
     print(f"| {'[ Name ]':^28} | {'pcs':>6} | {'fac':^5} | {'N':^5} ||Fe |Cu |Ti |Si |st |co |oi | H || ->")
@@ -98,9 +98,9 @@ def main():
         dep = add_depend_row(name)
         dest = d["dest"]
         print(f"| {name:^28} | {pcs:>6.2f} | {fac:^5} | {n:>5.2f} || {dep} || {dest}")
-    
+
     print(f"[ consumption ] {consumption/1000} MJ / pcs = {consumption/1000*gen_speed} MW / s")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
