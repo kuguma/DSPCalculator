@@ -42,3 +42,23 @@ python3 dspcalc.py
 ## Features
 
 - When you enter the name of the component, it outputs the required material and the number of factories needed to produce deliverable at 1pcs/s.
+
+## For developers
+
+Create venv
+
+```shell
+$ python3 -m venv venv
+```
+
+Install requirements
+
+```shell
+(venv) $ pip install -r requirements.txt 
+```
+
+Reformat and lint
+
+```shell
+(venv) $ tox
+```
